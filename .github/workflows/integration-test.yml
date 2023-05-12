@@ -1,0 +1,41 @@
+name: Integration test
+
+# Run every 8 hours
+on:
+  schedule:
+    - cron: 0 */8 * * *
+  workflow_dispatch: {}
+
+jobs:
+  start-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@24cb9080177205b6e8c946b17badbe402adc938f # v3
+
+      - name: Create Conda environment with abs
+        uses: mamba-org/provision-with-micromamba@main
+        with:
+          environment-file: false
+          environment-name: integration-test
+          cache-downloads: true
+          log-level: warning
+          channels: conda-forge,distro-tooling
+          extra-specs: |            
+            yq
+
+      - name: Get build number
+        id: build_number
+        run: echo "result=$(yq '.build.number' recipe/meta.yaml)" >> $GITHUB_OUTPUT
+
+      - name: Update recipe
+        id: recipe
+        run: |          
+          git config user.name "GitHub Actions Bot"
+          git config user.email "<>"
+          git checkout -b main   
+          yq -i '.build.number = "${{ steps.build_number.outputs.result }}"' recipe/meta.yaml
+          git add recipe/meta.yaml
+          git commit -m "update community-integration-test-feedstock" && git push --set-upstream origin main --force
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
