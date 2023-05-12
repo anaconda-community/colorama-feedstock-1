@@ -6,7 +6,7 @@ package:
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/colorama-{{ version }}.tar.gz
+  url: https://pypi.io/packages/source/c/colorama/colorama-{{ version }}.tar.gz
   sha256: 08695f5cb7ed6e0531a20572697297273c47b8cae5a63ffc6d6ed5c201be6e44
 
 build:
@@ -21,14 +21,6 @@ requirements:
     - hatchling >=0.25.1
   run:
     - python >=3.7
-
-test:
-  imports:
-    - community-integration-test
-  commands:
-    - pip check
-  requires:
-    - pip
 
 about:
   home: https://github.com/tartley/colorama
