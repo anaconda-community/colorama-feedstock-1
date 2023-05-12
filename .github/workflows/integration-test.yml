@@ -26,14 +26,16 @@ jobs:
 
       - name: Get build number
         id: build_number
-        run: echo "result=$(yq '.build.number' recipe/meta.yaml)" >> $GITHUB_OUTPUT
+        run: |          
+          value=$(yq '.build.number' recipe/meta.yaml)
+          ((value++))
+          echo "result=$value" >> $GITHUB_OUTPUT          
 
       - name: Update recipe
         id: recipe
         run: |          
           git config user.name "GitHub Actions Bot"
-          git config user.email "<>"
-          git checkout -b main   
+          git config user.email "<>"          
           yq -i '.build.number = "${{ steps.build_number.outputs.result }}"' recipe/meta.yaml
           git add recipe/meta.yaml
           git commit -m "update community-integration-test-feedstock" && git push --set-upstream origin main --force
