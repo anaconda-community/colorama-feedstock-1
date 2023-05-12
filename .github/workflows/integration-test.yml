@@ -44,4 +44,12 @@ jobs:
 
   run-test:
     needs: [ prepare-test ]
-    uses: anaconda-community/aggregate/.github/workflows/integration-test.yml@main
+    defaults:
+      run:
+        shell: bash -l {0}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run integration test
+        run: gh -R anaconda-community/aggregate workflow run "Integration Test"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
