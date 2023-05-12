@@ -39,8 +39,6 @@ jobs:
           yq -i '.build.number = ${{ steps.build_number.outputs.result }}' recipe/meta.yaml
           git add recipe/meta.yaml
           git commit -m "update build number" && git push --set-upstream origin main --force
-        env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
   run-test:
     needs: [ prepare-test ]
