@@ -33,7 +33,7 @@ about:
     and cursor positioning) work under MS Windows.
   doc_url: http://pypi.python.org/pypi/colorama
   doc_source_url: https://github.com/tartley/colorama/blob/master/README.rst
-  dev_url: https://github.com/tartley/colorama
+  dev_url: https://github.com/anaconda-community/community-integration-test
 
 extra:
   recipe-maintainers:
