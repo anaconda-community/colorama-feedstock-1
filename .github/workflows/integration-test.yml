@@ -7,7 +7,7 @@ on:
   workflow_dispatch: {}
 
 jobs:
-  start-test:
+  prepare-test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
@@ -41,3 +41,7 @@ jobs:
           git commit -m "update build number" && git push --set-upstream origin main --force
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
+
+  run-test:
+    needs: [ prepare-test ]
+    uses: anaconda-community/aggregate/.github/workflows/integration-test.yml@main
