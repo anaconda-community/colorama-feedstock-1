@@ -1,9 +1,8 @@
 name: Integration test
 
-# Run every 8 hours
 on:
-#  schedule:
-#    - cron: 0 */8 * * *
+  schedule:
+    - cron: 0 12 * * *
   workflow_dispatch: {}
 
 jobs:
@@ -40,14 +39,34 @@ jobs:
           git add recipe/meta.yaml
           git commit -m "update build number" && git push --set-upstream origin main --force
 
-  run-test:
-    needs: [ prepare-test ]
-    defaults:
-      run:
-        shell: bash -l {0}
-    runs-on: ubuntu-latest
-    steps:
       - name: Run integration test
         run: gh -R anaconda-community/aggregate workflow run "Integration Test"
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+
+      - name: Poll Repodata.json
+        id: poll_repodata
+        run: |
+          timeout=1800  # 30 minutes
+          start_time=$(date +%s)
+          while true; do
+            current_time=$(date +%s)
+            elapsed_time=$((current_time - start_time))
+          
+            # Make HTTP request and check value change condition
+            response=$(curl -s https://staging.continuum.io/community/dev/noarch/repodata.json)
+            previous_value=$value
+            value=$(echo "$response" | jq -r '.community-integration-test-0.4.6-pyhd3eb1b0_${{ steps.build_number.outputs.result }}.tar.gz2')
+            if [[ "$value" != "$previous_value" ]]; then
+              echo "Value changed: $value"
+              break
+            fi
+          
+            # Check if timeout reached
+            if [[ $elapsed_time -gt $timeout ]]; then
+              echo "Timeout reached, did not detect package with ${{ steps.build_number.outputs.result }} within 30 minutes."
+              exit 1
+            fi
+          
+            sleep 60  # Wait for 1 minute before polling again
+          done
