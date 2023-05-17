@@ -6,7 +6,7 @@ on:
   workflow_dispatch: {}
 
 jobs:
-  prepare-test:
+  integration-test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
@@ -54,11 +54,10 @@ jobs:
             elapsed_time=$((current_time - start_time))
           
             # Make HTTP request and check value change condition
-            response=$(curl -s https://staging.continuum.io/community/dev/noarch/repodata.json)
-            previous_value=$value
-            value=$(echo "$response" | jq -r '.community-integration-test-0.4.6-pyhd3eb1b0_${{ steps.build_number.outputs.result }}.tar.gz2')
-            if [[ "$value" != "$previous_value" ]]; then
-              echo "Value changed: $value"
+            response=$(curl -s https://staging.continuum.io/community/dev/noarch/repodata.json)            
+            package=$(echo "$response" | jq -r '.packages."community-integration-test-0.4.6-pyhd3eb1b0_${{ steps.build_number.outputs.result }}.tar.gz2"')
+            if [[ "$package" != "null" ]]; then
+              echo "Found package in repodata.json: $package"
               break
             fi
           
