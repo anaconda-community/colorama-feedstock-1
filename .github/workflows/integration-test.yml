@@ -65,6 +65,7 @@ jobs:
             if [[ $elapsed_time -gt $timeout ]]; then
               echo "Timeout reached, did not detect package: community-integration-test-0.4.6-pyhd3eb1b0_${{ steps.build_number.outputs.result }}.tar.gz2 within 30 minutes."
               echo "Repodata: $response"
+              echo "Package: $package"
               exit 1
             fi
           
