@@ -5,7 +5,7 @@ source:
   url: https://pypi.io/packages/source/c/colorama/colorama-0.4.6.tar.gz
   sha256: 08695f5cb7ed6e0531a20572697297273c47b8cae5a63ffc6d6ed5c201be6e44
 build:
-  number: 118
+  number: 119
   noarch: python
   script: python -m pip install . -vv
 requirements:
